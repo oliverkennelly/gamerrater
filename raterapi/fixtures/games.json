@@ -1,0 +1,28 @@
+[
+    {
+      "model": "raterapi.game",
+      "pk": 1,
+      "fields": {
+        "title": "Catan",
+        "description": "A classic board game of strategy and resource management.",
+        "designer": "Klaus Teuber",
+        "year_released": 1995,
+        "number_of_players": 3,
+        "estimated_time": 120,
+        "age_rec": 10
+      }
+    },
+    {
+      "model": "raterapi.game",
+      "pk": 2,
+      "fields": {
+        "title": "Ticket to Ride",
+        "description": "A cross-country train adventure game.",
+        "designer": "Alan R. Moon",
+        "year_released": 2004,
+        "number_of_players": 4,
+        "estimated_time": 90,
+        "age_rec": 8
+      }
+    }
+  ]

@@ -1,0 +1,16 @@
+[
+    {
+      "model": "raterapi.category",
+      "pk": 1,
+      "fields": {
+        "label": "Strategy"
+      }
+    },
+    {
+      "model": "raterapi.category",
+      "pk": 2,
+      "fields": {
+        "label": "Family"
+      }
+    }
+  ]
