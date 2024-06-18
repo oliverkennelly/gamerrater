@@ -1,0 +1,32 @@
+[
+    {
+        "model": "raterapi.review",
+        "pk": 1,
+        "fields": {
+          "user_id": 1,
+          "game_id": 1,
+          "score": 4,
+          "comment": "A great game with interesting mechanics!"
+        }
+      },
+      {
+        "model": "raterapi.review",
+        "pk": 2,
+        "fields": {
+          "user_id": 2,
+          "game_id": 1,
+          "score": 3,
+          "comment": "It was alright, but not my favorite."
+        }
+      },
+      {
+        "model": "raterapi.review",
+        "pk": 3,
+        "fields": {
+          "user_id": 1,
+          "game_id": 2,
+          "score": 5,
+          "comment": "Absolutely loved it! A must-play for strategy game fans."
+        }
+      }
+]

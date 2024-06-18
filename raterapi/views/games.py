@@ -2,7 +2,8 @@ from django.http import HttpResponseServerError
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from raterapi.models import Game
+from raterapi.models import Game, Category
+from .categories import CategorySerializer
 
 
 class GameView(ViewSet):
@@ -15,6 +16,9 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized instance
         """
+        categories_ids = request.data.get('categories', [])
+        categories = Category.objects.filter(id__in=categories_ids)
+
         game = Game()
         game.title = request.data["name"]
         game.description = request.data["description"]
@@ -22,10 +26,11 @@ class GameView(ViewSet):
         game.year_released = request.data["year_released"]
         game.number_of_players = request.data["number_of_players"]
         game.estimated_time = request.data["estimated_time"]
-        game.estimated_time = request.data["age_rec"]
+        game.age_rec = request.data["age_rec"]
 
         try:
             game.save()
+            game.categories.set(categories)
             serializer = GameSerializer(game)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as ex:
@@ -51,6 +56,8 @@ class GameView(ViewSet):
             Response -- Empty body with 204 status code
         """
         try:
+            categories_ids = request.data.get('categories', [])
+            categories = Category.objects.filter(id__in=categories_ids)
             game = Game.objects.get(pk=pk)
             game.title = request.data["name"]
             game.description = request.data["description"]
@@ -58,7 +65,8 @@ class GameView(ViewSet):
             game.year_released = request.data["year_released"]
             game.number_of_players = request.data["number_of_players"]
             game.estimated_time = request.data["estimated_time"]
-            game.estimated_time = request.data["age_rec"]
+            game.age_rec = request.data["age_rec"]
+            game.categories.set(categories)
             game.save()
         except game.DoesNotExist:
             return Response(None, status=status.HTTP_404_NOT_FOUND)
@@ -101,7 +109,8 @@ class GameView(ViewSet):
 
 class GameSerializer(serializers.ModelSerializer):
     """JSON serializer"""
+    categories = serializers.StringRelatedField(many=True, read_only=True)
 
     class Meta:
         model = Game
-        fields = ( 'id', 'sample_name', 'sample_description', )
+        fields = ( 'id', 'title', 'description', 'year_released', 'number_of_players', 'estimated_time', 'age_rec', 'categories')
