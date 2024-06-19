@@ -3,7 +3,6 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from raterapi.models import Game, Category, GameCategory
-from .categories import CategorySerializer
 
 
 class GameView(ViewSet):
@@ -57,8 +56,6 @@ class GameView(ViewSet):
             Response -- Empty body with 204 status code
         """
         try:
-            categories_ids = request.data.get('categories', [])
-            categories = Category.objects.filter(id__in=categories_ids)
             game = Game.objects.get(pk=pk)
             game.title = request.data["title"]
             game.description = request.data["description"]
@@ -67,8 +64,9 @@ class GameView(ViewSet):
             game.number_of_players = request.data["number_of_players"]
             game.estimated_time = request.data["estimated_time"]
             game.age_rec = request.data["age_rec"]
-            game.categories.set(categories)
+            game.average_score = request.data["average_score"]
             game.save()
+            serializer = GameSerializer(game)
         except game.DoesNotExist:
             return Response(None, status=status.HTTP_404_NOT_FOUND)
 
@@ -114,4 +112,4 @@ class GameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ( 'id', 'title', 'designer', 'description', 'year_released', 'number_of_players', 'estimated_time', 'age_rec', 'categories')
+        fields = ( 'id', 'title', 'designer', 'description', 'year_released', 'number_of_players', 'estimated_time', 'age_rec', 'categories', 'average_score')

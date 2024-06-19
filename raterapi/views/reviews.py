@@ -3,7 +3,6 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from raterapi.models import Review, Game
-from django.contrib.auth.models import User
 
 class ReviewView(ViewSet):
     """Review view set"""
@@ -11,7 +10,7 @@ class ReviewView(ViewSet):
     def create(self, request):
         """Handle POST operations"""
         review = Review()
-        review.user = User.objects.get(pk=request.data["user_id"])
+        review.user = request.auth.user
         review.game = Game.objects.get(pk=request.data["game_id"])
         review.score = request.data["score"]
         review.comment = request.data["comment"]
@@ -44,7 +43,7 @@ class ReviewView(ViewSet):
         """
         try:
             review = Review.objects.get(pk=pk)
-            review.user = User.objects.get(pk=request.data["user_id"])
+            review.user = request.auth.user
             review.game = Game.objects.get(pk=request.data["game_id"])
             review.score = request.data["score"]
             review.comment = request.data["comment"]
@@ -80,8 +79,11 @@ class ReviewView(ViewSet):
         Returns:
             Response -- JSON serialized array
         """
+        game_id = self.request.query_params.get('game')
         try:
             reviews = Review.objects.all()
+            if game_id is not None:
+                reviews = reviews.filter(game_id=game_id)
             serializer = ReviewSerializer(reviews, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as ex:
