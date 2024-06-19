@@ -3,6 +3,7 @@ from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 from raterapi.models import Game, Category, GameCategory
+from django.db.models import Q
 
 
 class GameView(ViewSet):
@@ -98,8 +99,16 @@ class GameView(ViewSet):
         Returns:
             Response -- JSON serialized array
         """
+        search_text = self.request.query_params.get('q', None)
         try:
-            games = Game.objects.all()
+            if search_text is not None:
+                games = Game.objects.filter(
+                    Q(title__contains=search_text) |
+                    Q(description__contains=search_text) |
+                    Q(designer__contains=search_text)
+                )
+            else:
+                games = Game.objects.all()
             serializer = GameSerializer(games, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as ex:
