@@ -2,7 +2,7 @@ from django.http import HttpResponseServerError
 from rest_framework import serializers, status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
-from raterapi.models import Game, Category
+from raterapi.models import Game, Category, GameCategory
 from .categories import CategorySerializer
 
 
@@ -20,7 +20,7 @@ class GameView(ViewSet):
         categories = Category.objects.filter(id__in=categories_ids)
 
         game = Game()
-        game.title = request.data["name"]
+        game.title = request.data["title"]
         game.description = request.data["description"]
         game.designer = request.data["designer"]
         game.year_released = request.data["year_released"]
@@ -30,7 +30,8 @@ class GameView(ViewSet):
 
         try:
             game.save()
-            game.categories.set(categories)
+            for category in categories:
+                GameCategory.objects.create(game=game, category=category)
             serializer = GameSerializer(game)
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         except Exception as ex:
@@ -59,7 +60,7 @@ class GameView(ViewSet):
             categories_ids = request.data.get('categories', [])
             categories = Category.objects.filter(id__in=categories_ids)
             game = Game.objects.get(pk=pk)
-            game.title = request.data["name"]
+            game.title = request.data["title"]
             game.description = request.data["description"]
             game.designer = request.data["designer"]
             game.year_released = request.data["year_released"]
@@ -113,4 +114,4 @@ class GameSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Game
-        fields = ( 'id', 'title', 'description', 'year_released', 'number_of_players', 'estimated_time', 'age_rec', 'categories')
+        fields = ( 'id', 'title', 'designer', 'description', 'year_released', 'number_of_players', 'estimated_time', 'age_rec', 'categories')
