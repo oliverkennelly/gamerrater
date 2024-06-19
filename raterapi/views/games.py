@@ -100,15 +100,19 @@ class GameView(ViewSet):
             Response -- JSON serialized array
         """
         search_text = self.request.query_params.get('q', None)
+        order_by = self.request.query_params.get('order_by', None)
         try:
+            games = Game.objects.all()
+            
             if search_text is not None:
                 games = Game.objects.filter(
                     Q(title__contains=search_text) |
                     Q(description__contains=search_text) |
                     Q(designer__contains=search_text)
                 )
-            else:
-                games = Game.objects.all()
+            if order_by is not None:
+                order_by_fields = order_by.split(',')
+                games = games.order_by(*order_by_fields)
             serializer = GameSerializer(games, many=True)
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Exception as ex:
